@@ -7,7 +7,6 @@ import { config } from 'dotenv';
 import userRoutes from './routes/users.js';
 import storyRoutes from './routes/stories.js';
 import authRoutes from './routes/authRoutes.js';
-
 config();  
 
 const app = express();
