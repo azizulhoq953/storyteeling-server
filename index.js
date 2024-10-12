@@ -25,7 +25,7 @@ const io = new socketIo(server, {
 
 
 app.use(cors({
-    origin: 'http://localhost:3000',  // Frontend origin
+    origin: 'https://storytelling-client.vercel.app',  // Frontend origin
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],  // Allow all required methods
     allowedHeaders: ['Content-Type', 'Authorization'],  // Allow necessary headers
     credentials: true  
