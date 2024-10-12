@@ -16,7 +16,7 @@ const server = http.createServer(app);
 
 const io = new socketIo(server, {
     cors: {
-        origin: 'https://storytelling-client.vercel.app/', 
+        origin: 'https://storytelling-client.vercel.app', 
         methods: ['GET', 'POST'],
         credentials: true  
     }
