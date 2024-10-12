@@ -1,67 +1,34 @@
 import express, { json } from 'express';
 import { connect } from 'mongoose';
 import cors from 'cors';
-import { Server as socketIo } from 'socket.io';
-import http from 'http';
 import { config } from 'dotenv';
 import userRoutes from './routes/users.js';
 import storyRoutes from './routes/stories.js';
 import authRoutes from './routes/authRoutes.js';
 
-config();  
+config();
 
 const app = express();
-const server = http.createServer(app);
 
-
-const io = new socketIo(server, {
-    cors: {
-        origin: 'https://storytelling-client.vercel.app', 
-        methods: ['GET', 'POST'],
-        credentials: true  
-    }
-});
-
-
-
-app.use(cors({
-    origin: 'https://storytelling-client.vercel.app',  // Frontend origin
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],  // Allow all required methods
-    allowedHeaders: ['Content-Type', 'Authorization'],  // Allow necessary headers
-    credentials: true  
-}));
-// Handle preflight requests for all routes
-app.options('*', cors()); 
 // Middleware
-app.use(json());  
-res.json("Hello");
-// app.use(cors(corsOptions));
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'https://storytelling-client.vercel.app', // Replace with your frontend URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 
-io.on('connection', (socket) => {
-    console.log('New client connected');
-    
-    
-    socket.on('trackData', (data) => {
-        // Handle tracking data here
-        io.emit('dataUpdate', data);
-    });
+app.options('*', cors());
 
-    socket.on('disconnect', () => {
-        console.log('Client disconnected');
-    });
-});
-
-
+// MongoDB Connection
 connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('MongoDB connected'))
-    .catch(err => console.error('MongoDB connection error:', err));
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
+// Routes
+app.use('/api/users', userRoutes);
+app.use('/api/stories', storyRoutes);
+app.use('/api/auth', authRoutes);
 
-app.use('/api/users', userRoutes);       
-app.use('/api/stories', storyRoutes);    
-app.use('/api/auth', authRoutes);  
-// app.put('/api/stories/edit/:id',storyRoutes)  
-   
-
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Export the app as a Vercel serverless function
+export default app;
