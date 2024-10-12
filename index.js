@@ -16,7 +16,7 @@ const server = http.createServer(app);
 
 const io = new socketIo(server, {
     cors: {
-        origin: 'http://localhost:3000', 
+        origin: 'https://storytelling-client.vercel.app/', 
         methods: ['GET', 'POST'],
         credentials: true  
     }
@@ -34,6 +34,7 @@ app.use(cors({
 app.options('*', cors()); 
 // Middleware
 app.use(json());  
+res.json("Hello");
 // app.use(cors(corsOptions));
 
 io.on('connection', (socket) => {
