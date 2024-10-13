@@ -24,7 +24,14 @@ const io = new socketIo(server, {
 
 // CORS setup for API
 app.use(cors({
-    origin: 'https://storytelling-client.vercel.app',  // Frontend origin
+    // origin: 'https://storytelling-client.vercel.app',  // Frontend origin
+    // methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    // allowedHeaders: ['Content-Type', 'Authorization'],
+    // credentials: true
+      origin: [
+        'https://storytelling-client.vercel.app',  // Original frontend origin
+        'https://storytelling-client-bf24x6fyg-azizuls-projects-69ab18f1.vercel.app'  // New frontend origin
+    ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
