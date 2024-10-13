@@ -34,6 +34,7 @@ app.options('*', cors());
 // Middleware
 app.use(json());  
 // app.use(cors(corsOptions));
+res.json("Hello");
 
 io.on('connection', (socket) => {
     console.log('New client connected');
