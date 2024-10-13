@@ -7,42 +7,47 @@ import { config } from 'dotenv';
 import userRoutes from './routes/users.js';
 import storyRoutes from './routes/stories.js';
 import authRoutes from './routes/authRoutes.js';
-config();  
+
+config();  // Load environment variables
 
 const app = express();
 const server = http.createServer(app);
 
-
+// Setting up Socket.IO with CORS
 const io = new socketIo(server, {
     cors: {
-        origin: 'https://storytelling-client.vercel.app', 
+        origin: 'https://storytelling-client.vercel.app',  // Update to your deployed frontend
         methods: ['GET', 'POST'],
-        credentials: true  
+        credentials: true
     }
 });
 
-
-
+// CORS setup for API
 app.use(cors({
     origin: 'https://storytelling-client.vercel.app',  // Frontend origin
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],  // Allow all required methods
-    allowedHeaders: ['Content-Type', 'Authorization'],  // Allow necessary headers
-    credentials: true  
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
 }));
-// Handle preflight requests for all routes
-app.options('*', cors()); 
-// Middleware
-app.use(json());  
-// app.use(cors(corsOptions));
-res.json("Hello");
 
+// Handle preflight requests (OPTIONS)
+app.options('*', cors());
+
+// Middleware to parse JSON requests
+app.use(json());
+
+// Test route to ensure server is running
+app.get('/', (req, res) => {
+    res.json({ message: "Hello from the server!" });
+});
+
+// Socket.IO events
 io.on('connection', (socket) => {
     console.log('New client connected');
     
-    
     socket.on('trackData', (data) => {
         // Handle tracking data here
-        io.emit('dataUpdate', data);
+        io.emit('dataUpdate', data);  // Emit data back to all clients
     });
 
     socket.on('disconnect', () => {
@@ -50,17 +55,18 @@ io.on('connection', (socket) => {
     });
 });
 
-
+// MongoDB Connection
 connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('MongoDB connected'))
+    .then(() => console.log('MongoDB connected successfully'))
     .catch(err => console.error('MongoDB connection error:', err));
 
+// Routes for API
+app.use('/api/users', userRoutes);
+app.use('/api/stories', storyRoutes);
+app.use('/api/auth', authRoutes);
 
-app.use('/api/users', userRoutes);       
-app.use('/api/stories', storyRoutes);    
-app.use('/api/auth', authRoutes);  
-// app.put('/api/stories/edit/:id',storyRoutes)  
-   
-
-const PORT = process.env.PORT;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Start server
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
